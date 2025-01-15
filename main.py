@@ -7,6 +7,7 @@ from Crypto.Random import get_random_bytes
 import getpass
 import smtplib
 from email.mime.text import MIMEText
+from pqcrypto.kem.kyber512 import generate_keypair, encrypt, decrypt
 
 # MongoDB setup
 client = MongoClient("mongodb://localhost:27017/")
@@ -14,14 +15,8 @@ db = client["secure_db"]
 users_collection = db["users"]
 data_collection = db["data"]
 
-# Encryption key (in a real-world scenario, store this securely)
-ENCRYPTION_KEY = get_random_bytes(32)
-
-# Email configuration (replace with your SMTP server details)
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-EMAIL_ADDRESS = "email"
-EMAIL_PASSWORD = "pass"
+# Quantum-resistant key pair (in a real-world scenario, store this securely)
+public_key, private_key = generate_keypair()
 
 # Helper functions
 def hash_password(password):
@@ -41,16 +36,22 @@ def verify_mfa_code(secret, code):
     return totp.verify(code)
 
 def encrypt_data(data):
-    cipher = AES.new(ENCRYPTION_KEY, AES.MODE_EAX)
-    ciphertext, tag = cipher.encrypt_and_digest(data.encode())
-    return cipher.nonce + tag + ciphertext
+    # Encrypt the data using Kyber for key encapsulation and AES for symmetric encryption
+    ciphertext, shared_secret = encrypt(public_key)  # Kyber encapsulation
+    cipher = AES.new(shared_secret[:32], AES.MODE_EAX)  # Use first 32 bytes of shared secret as AES key
+    ciphertext_aes, tag = cipher.encrypt_and_digest(data.encode())
+    return cipher.nonce + tag + ciphertext + ciphertext_aes
 
 def decrypt_data(encrypted_data):
+    # Decrypt the data using Kyber for key decapsulation and AES for symmetric decryption
     nonce = encrypted_data[:16]
     tag = encrypted_data[16:32]
-    ciphertext = encrypted_data[32:]
-    cipher = AES.new(ENCRYPTION_KEY, AES.MODE_EAX, nonce=nonce)
-    return cipher.decrypt_and_verify(ciphertext, tag).decode()
+    ciphertext_kyber = encrypted_data[32:32 + 768]  # Kyber ciphertext is 768 bytes
+    ciphertext_aes = encrypted_data[32 + 768:]
+
+    shared_secret = decrypt(ciphertext_kyber, private_key)  # Kyber decapsulation
+    cipher = AES.new(shared_secret[:32], AES.MODE_EAX, nonce=nonce)  # Use first 32 bytes of shared secret as AES key
+    return cipher.decrypt_and_verify(ciphertext_aes, tag).decode()
 
 def send_email(to_email, subject, body):
     msg = MIMEText(body)
