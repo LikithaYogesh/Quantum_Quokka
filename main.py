@@ -8,15 +8,23 @@ import getpass
 import smtplib
 from email.mime.text import MIMEText
 from pqcrypto.kem.kyber512 import generate_keypair, encrypt, decrypt
+from datetime import datetime
 
 # MongoDB setup
 client = MongoClient("mongodb://localhost:27017/")
 db = client["secure_db"]
 users_collection = db["users"]
 data_collection = db["data"]
+audit_logs_collection = db["audit_logs"]  # Collection for audit logs
 
 # Quantum-resistant key pair (in a real-world scenario, store this securely)
 public_key, private_key = generate_keypair()
+
+# Email configuration (replace with your SMTP server details)
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+EMAIL_ADDRESS = "your_email@gmail.com"
+EMAIL_PASSWORD = "your_app_password"
 
 # Helper functions
 def hash_password(password):
@@ -64,15 +72,26 @@ def send_email(to_email, subject, body):
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.sendmail(EMAIL_ADDRESS, to_email, msg.as_string())
 
+def log_audit_event(username, action, status="success"):
+    """Log an audit event to the database."""
+    audit_logs_collection.insert_one({
+        "timestamp": datetime.utcnow(),
+        "username": username,
+        "action": action,
+        "status": status
+    })
+
 # CLI Commands
 def login(username, password):
     user = users_collection.find_one({"username": username})
     if not user:
         print("User not found.")
+        log_audit_event(username, "login", status="failed")
         return None
 
     if not verify_password(password, user["password_hash"]):
         print("Invalid password.")
+        log_audit_event(username, "login", status="failed")
         return None
 
     # Generate and send MFA code
@@ -85,12 +104,19 @@ def login(username, password):
     user_input = input("Enter MFA code: ")
     if not verify_mfa_code(user["mfa_secret"], user_input):
         print("Invalid MFA code.")
+        log_audit_event(username, "login", status="failed")
         return None
 
     print("Login successful!")
+    log_audit_event(username, "login")
     return user
 
 def push_data(user, data, role):
+    if user["role"] != role:
+        print("Access denied. Your role does not allow pushing data for this role.")
+        log_audit_event(user["username"], "push_data", status="failed")
+        return
+
     encrypted_data = encrypt_data(data)
     data_collection.insert_one({
         "user_id": user["_id"],
@@ -98,20 +124,24 @@ def push_data(user, data, role):
         "role": role
     })
     print("Data pushed successfully.")
+    log_audit_event(user["username"], "push_data")
 
 def fetch_data(user):
     data_entries = data_collection.find({"role": user["role"]})
     for entry in data_entries:
         decrypted_data = decrypt_data(entry["encrypted_data"])
         print(f"Data: {decrypted_data}")
+    log_audit_event(user["username"], "fetch_data")
 
 def add_user(admin, username, password, email, role):
     if admin["role"] != "admin":
         print("Only admins can add users.")
+        log_audit_event(admin["username"], "add_user", status="failed")
         return
 
     if users_collection.find_one({"username": username}):
         print("User already exists.")
+        log_audit_event(admin["username"], "add_user", status="failed")
         return
 
     # Hash the password before storing it
@@ -125,6 +155,7 @@ def add_user(admin, username, password, email, role):
         "mfa_secret": mfa_secret
     })
     print(f"User added successfully. MFA Secret: {mfa_secret}")
+    log_audit_event(admin["username"], "add_user")
 
 # Main CLI
 def main():
