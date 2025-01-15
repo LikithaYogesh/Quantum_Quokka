@@ -1,17 +1,37 @@
 # Secure Database CLI Tool
 
-A command-line interface (CLI) tool designed to manage a secure database with advanced security features such as quantum-resistant encryption, multi-factor authentication (MFA), role-based access control, and email notifications. This project leverages Kyber512 (post-quantum cryptography) for key encapsulation, ensuring future-proof security against quantum computing threats.
+This repository provides a secure, quantum-resistant, and Zero Trust Architecture (ZTA)-enabled database management CLI tool. It integrates advanced cryptographic techniques and ZTA principles to ensure robust protection of sensitive data.
 
 ## Features
-- **Quantum-Resistant Encryption**:
-  Implements Kyber512 for key encapsulation to protect against quantum attacks.
-  Combines Kyber-generated shared secrets with AES encryption for symmetric data security.
-- **User Authentication**: Secure login with hashed passwords.
-- **Multi-Factor Authentication (MFA)**: TOTP-based MFA for enhanced security.
-- **Data Encryption**: AES encryption for sensitive data storage.
-- **Role-Based Access Control**: Restrict data access based on user roles.
-- **Email Notifications**: Send MFA codes via email.
-- **Admin Controls**: Admins can add new users with specific roles.
+**1. Zero Trust Architecture (ZTA):**
+
+Implements strict role-based access control to ensure users only access data relevant to their role.
+
+Multi-Factor Authentication (MFA) for enhanced user identity verification.
+
+Comprehensive audit logging to track and monitor all actions within the system.
+
+**2. Quantum-Resistant Encryption:**
+
+Uses Kyber512, a quantum-resistant cryptographic algorithm, to secure data against future quantum computing threats.
+
+Hybrid encryption model combining Kyber512 for key encapsulation and AES for symmetric encryption.
+
+**3. Role-Based Data Management:**
+
+Push and fetch data based on user roles, adhering to ZTA principles.
+
+Granular data access policies for enhanced security.
+
+**4. Audit Logging:**
+
+Logs every critical event (e.g., login attempts, data access, user additions) to an audit trail.
+
+Ensures transparency and accountability within the system.
+
+**5. Secure Email Notifications:**
+
+Sends MFA codes and other notifications via email, with encrypted communication over SMTP.
 
 ## Technologies Used
 - **Python Libraries**:
@@ -21,6 +41,7 @@ A command-line interface (CLI) tool designed to manage a secure database with ad
   - `pymongo` - MongoDB integration.
   - `Crypto.Cipher` - AES encryption.
   - `smtplib` and `email.mime` - Email functionality.
+  - `pycrypto` - Kyber512.
 - **Database**: MongoDB.
 
 ## Prerequisites
@@ -67,6 +88,23 @@ Commands
 2. Email Credentials: Use a secure method to manage your email credentials (e.g., .env files or secret management tools).
 3. Database Security: Ensure MongoDB is configured securely to prevent unauthorized access.
 
+## ZTA Principles in Action
+
+Never Trust, Always Verify: Every user action is verified through MFA and role-based controls.
+
+Minimize Attack Surface: Data access is restricted to the minimum necessary for each user role.
+
+Audit and Monitor: Comprehensive logging ensures that every action is traceable.
+
+## Security Highlights
+
+Quantum-Resistant Encryption: Protects data against potential future quantum threats.
+
+AES Encryption: Ensures fast and secure symmetric encryption for data.
+
+MFA: Adds a critical layer of user authentication.
+
+Audit Logs: Provides a transparent trail of all operations.
 ## Acknowledgments
 
 Kyber512 Documentation
@@ -77,3 +115,5 @@ MongoDB Python Driver
 
 pyotp Library
 
+---
+Enhance your data security with cutting-edge ZTA and quantum-resistant encryption. Let's build a safer digital future!
