@@ -1,8 +1,11 @@
 # Secure Database CLI Tool
 
-A command-line interface (CLI) tool designed to manage a secure database with features like multi-factor authentication (MFA), data encryption, role-based access control, and email notifications. This tool leverages Python's powerful libraries to ensure high security and ease of use.
+A command-line interface (CLI) tool designed to manage a secure database with advanced security features such as quantum-resistant encryption, multi-factor authentication (MFA), role-based access control, and email notifications. This project leverages Kyber512 (post-quantum cryptography) for key encapsulation, ensuring future-proof security against quantum computing threats.
 
 ## Features
+- **Quantum-Resistant Encryption**:
+  Implements Kyber512 for key encapsulation to protect against quantum attacks.
+  Combines Kyber-generated shared secrets with AES encryption for symmetric data security.
 - **User Authentication**: Secure login with hashed passwords.
 - **Multi-Factor Authentication (MFA)**: TOTP-based MFA for enhanced security.
 - **Data Encryption**: AES encryption for sensitive data storage.
@@ -64,4 +67,13 @@ Commands
 2. Email Credentials: Use a secure method to manage your email credentials (e.g., .env files or secret management tools).
 3. Database Security: Ensure MongoDB is configured securely to prevent unauthorized access.
 
+## Acknowledgments
+
+Kyber512 Documentation
+
+PyCryptodome Library
+
+MongoDB Python Driver
+
+pyotp Library
 
