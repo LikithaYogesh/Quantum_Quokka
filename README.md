@@ -1,37 +1,47 @@
-# Secure Database CLI Tool
+# 🔐 Secure Database CLI Tool
+A Quantum-Resistant, Zero Trust Architecture-Enabled Secure Data Management System
 
-This repository provides a secure, quantum-resistant, and Zero Trust Architecture (ZTA)-enabled database management CLI tool. It integrates advanced cryptographic techniques and ZTA principles to ensure robust protection of sensitive data.
+
+
+## 📌 Overview
+Secure Database CLI Tool is a highly secure, role-based, and quantum-resistant command-line interface application designed to manage sensitive data in adherence with modern security standards. It integrates Zero Trust Architecture (ZTA) principles, Multi-Factor Authentication (MFA), audit logging, and quantum-safe encryption (Kyber512 + AES) to offer a future-ready, minimal-trust data handling platform.
 
 ## Features
 **1. Zero Trust Architecture (ZTA):**
 
-Implements strict role-based access control to ensure users only access data relevant to their role.
+Role-Based Access Control (RBAC)
 
-Multi-Factor Authentication (MFA) for enhanced user identity verification.
+Multi-Factor Authentication via TOTP and secure email delivery
 
-Comprehensive audit logging to track and monitor all actions within the system.
+"Never Trust, Always Verify" principle enforced at every interaction
+
+Logs all critical user actions and access attempts.
 
 **2. Quantum-Resistant Encryption:**
 
-Uses Kyber512, a quantum-resistant cryptographic algorithm, to secure data against future quantum computing threats.
+Hybrid encryption using Kyber512 for public-key encapsulation
 
-Hybrid encryption model combining Kyber512 for key encapsulation and AES for symmetric encryption.
+AES symmetric encryption for data payloads
+
+Resists future quantum computing threats
 
 **3. Role-Based Data Management:**
 
-Push and fetch data based on user roles, adhering to ZTA principles.
+Role-specific push and fetch permissions
 
-Granular data access policies for enhanced security.
+Supports granular control over data access
 
 **4. Audit Logging:**
 
-Logs every critical event (e.g., login attempts, data access, user additions) to an audit trail.
+Every action (e.g., login, fetch, push, add-user) is logged
 
-Ensures transparency and accountability within the system.
+Supports monitoring and forensic tracing
 
 **5. Secure Email Notifications:**
 
-Sends MFA codes and other notifications via email, with encrypted communication over SMTP.
+Sends MFA codes securely over encrypted SMTP
+
+Configurable sender address and credentials
 
 ## Technologies Used
 - **Python Libraries**:
@@ -105,6 +115,10 @@ AES Encryption: Ensures fast and secure symmetric encryption for data.
 MFA: Adds a critical layer of user authentication.
 
 Audit Logs: Provides a transparent trail of all operations.
+
+## License
+
+MIT License © 2025 Likitha Yogesh
 ## Acknowledgments
 
 Kyber512 Documentation
